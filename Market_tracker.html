@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BaseCharts</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script>
+    async function fetchDictionary(url) {
+        const response = await fetch(url);
+        const text = await response.text();
+        return JSON.parse(text);
+    }
+
+    async function fetchAndCombineDictionaries() {
+        const urls = [
+            'https://raw.githubusercontent.com/agfutures/pix_CFTC/refs/heads/main/pix_CFTC.txt',
+            'https://raw.githubusercontent.com/agfutures/pix_ERS/refs/heads/main/pix_ERS.txt',
+            'https://raw.githubusercontent.com/agfutures/pix_COMEX/refs/heads/main/pix_COMEX.txt',
+            'https://raw.githubusercontent.com/agfutures/pix_WASDE/refs/heads/main/pix_WASDE.txt',
+            'https://raw.githubusercontent.com/agfutures/pix_NASS/refs/heads/main/pix_NASS.txt'
+        ];
+
+        const dictionaries = await Promise.all(urls.map(url => fetchDictionary(url)));
+        const combinedDictionary = Object.assign({}, ...dictionaries);
+        return combinedDictionary;
+    }
+
+    async function displayImages() {
+        const d0 = await fetchAndCombineDictionaries();
+        console.log(d0); // Log the d0 object
+        const container = document.getElementById('chartContainer');
+
+        function showImage() {
+            var commodity = document.querySelector('input[name="commodity"]:checked').value;
+            var comm_class = document.querySelector('input[name="comm_class"]:checked').value;
+            var def = document.querySelector('input[name="def"]:checked').value;
+            var region = document.querySelector('input[name="region"]:checked').value;
+            var MktYear = document.querySelector('input[name="MktYear"]:checked').value;
+            var Release = document.querySelector('input[name="Release"]:checked').value;
+            console.log('Selected options:', { commodity, comm_class, def, region, MktYear, Release });
+
+            var imageId;
+
+            if (def === 'History' || def === 'Snapshot') {
+                if (commodity === 'Corn') {
+                  report = 'World Corn Supply and Use';
+                } else if (commodity === 'Wheat') {
+                  report = 'World Wheat Supply and Use';
+                } else if (commodity === 'Soybeans') {
+                  report = 'World Soybean Supply and Use';
+                } else if (commodity === 'Soybean Meal') {
+                  report = 'World Soybean Meal Supply and Use';
+                } else if (commodity === 'Soybean Oil') {
+                  report = 'World Soybean Oil Supply and Use';
+                }
+                }
+             
+
+                if (def === 'History') {
+                imageId = (def + '_' + commodity + '_' + report + '_' + region).toUpperCase();
+                } else if (def === 'Snapshot') {
+                imageId = (def + '_' + commodity + '_' + report + '_' + MktYear + '_' + Release).toUpperCase();
+                } else if (def === 'Good_Excellent') {
+                imageId = ('NASS_' + def + '_' + commodity + comm_class).toUpperCase();
+                } else if (def === 'Progress') {
+                imageId = ('NASS_' + def + '_' + commodity + comm_class).toUpperCase();
+                } else if (def === 'Production') {
+                imageId = ('NASS_' + def + '_' + commodity + comm_class).toUpperCase();
+                } else if (def === 'Yield_Acreage') {
+                imageId = ('NASS_' + def + '_' + commodity + comm_class).toUpperCase();
+                } else if (def === 'Weekly_Exports') {
+                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                } else if (def === 'Net_Sales') {
+                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                } else if (def === 'Accum_Exports') {
+                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                } else if (def === 'CMY_Total_Commitments') {
+                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                } else if (def === 'WEEKLY NET POSITION') {
+                imageId = ('CFTC' +'_' + commodity + comm_class +'_' + def).toUpperCase();
+                } else if (def === '%OI_VS_PRICE') {
+                imageId = ('CFTC' +'_' + commodity + comm_class +'_' + def).toUpperCase();
+                } else if (def === 'PCT_OF_OI') {
+                imageId = ('CFTC' +'_' + def).toUpperCase();
+                } else if (def === 'comex_monthly') {
+                imageId = (def + '_' + commodity + '_' + 'region').toUpperCase();
+                } else if (def === 'comex_accu') {
+                imageId = (def + '_' + commodity + '_' + 'region').toUpperCase();
+                }  
+            console.log('Constructed imageId:', imageId);
+
+            // Clear existing images
+            container.innerHTML = '';
+
+            // Display only the selected image ID
+            const selectedImage = d0[imageId];
+            if (selectedImage) {
+                const img = document.createElement('img');
+                img.src = `data:image/png;base64,${selectedImage}`;
+                img.alt = imageId;
+                container.appendChild(img);
+            } else {
+            const noDataMessage = document.createElement('p');
+            noDataMessage.textContent = 'No data found';
+            container.appendChild(noDataMessage);
+            }
+        }
+
+        var slicerInputs = document.querySelectorAll('.slicer input');
+        slicerInputs.forEach(function(input) {
+            input.addEventListener('change', showImage);
+        });
+
+        // Make showImage function globally accessible
+        window.showImage = showImage;
+    }
+
+    window.onload = displayImages;
+
+    </script>
+
+
+</head>
+<body>
+        <div id="menu">
+            <div class="slicer">
+                <label for="commodity">COMMODITY:</label>
+                <div><input type="radio" name="commodity" id="commodity_corn" value="Corn" checked><label for="commodity_corn">Corn</label></div>
+                <div><input type="radio" name="commodity" id="commodity_wheat" value="Wheat"><label for="commodity_wheat">Wheat</label></div>
+                <div><input type="radio" name="commodity" id="commodity_soybean" value="Soybeans"><label for="commodity_soybean">Soybeans</label></div>
+                <div><input type="radio" name="commodity" id="commodity_sbm" value="Soybean Meal"><label for="commodity_sbm">Soybean Meal</label></div>
+                <div><input type="radio" name="commodity" id="commodity_soy oil" value="Soybean Oil"><label for="commodity_soy oil">Soybean Oil</label></div>
+    
+            </div>
+            <div class="slicer">
+                <label for="comm_class">CLASS:</label>
+                <div><input type="radio" name="comm_class" id="class_blank" value="" checked><label for="class_blank">Blank</label></div>
+                <div><input type="radio" name="comm_class" id="class_cme" value="-CME"><label for="class_cme">CME</label></div>
+                <div><input type="radio" name="comm_class" id="class_ks" value="-KS"><label for="class_ks">KS</label></div>
+                <div><input type="radio" name="comm_class" id="class_mn" value="-MN"><label for="class_mn">MN</label></div>
+                <div><input type="radio" name="comm_class" id="class_winter" value=", WINTER"><label for="class_winter">Winter</label></div>
+                <div><input type="radio" name="comm_class" id="class_spring" value=", SPRING, (EXCL DURUM)"><label for="class_spring">Spring</label></div>
+            </div>
+            <div class="slicer">
+                <label for="def">DATASET:</label>
+                <div class="def">                
+                <div><input type="radio" name="def" id="def_snapshot" value="Snapshot" checked><label for="def_snapshot">SND_Snapshot</label></div>
+                <div><input type="radio" name="def" id="def_history" value="History"><label for="def_history">SND_Historical</label></div>
+                <div><input type="radio" name="def" id="def_ge" value="Good_Excellent"><label for="def_ge">US_GE_Condition</label></div>
+                <div><input type="radio" name="def" id="def_progress" value="Progress"><label for="def_progress">US_Progress</label></div>
+		<div><input type="radio" name="def" id="def_production" value="Production"><label for="def_production">US_Production</label></div>
+		<div><input type="radio" name="def" id="def_yield_acreage" value="Yield_Acreage"><label for="def_yield_acreage">US_Yield_Acres</label></div>
+		<div><input type="radio" name="def" id="def_weekly_exports" value="Weekly_Exports"><label for="def_weekly_exports">US_Monthly_Exports</label></div>
+		<div><input type="radio" name="def" id="def_net_sales" value="Net_Sales"><label for="def_net_sales">US_Net_Sales</label></div>
+		<div><input type="radio" name="def" id="def_accum_exports" value="Accum_Exports"><label for="def_accum_exports">US_Accum_Exports</label></div>
+		<div><input type="radio" name="def" id="def_cmy_commit" value="CMY_Total_Commitments"><label for="def_cmy_commit">US_CMY_Commitments</label></div>
+                <div><input type="radio" name="def" id="def_cftc_pos" value="WEEKLY NET POSITION"><label for="def_cftc_pos">CFTC_Net_position</label></div>
+                <div><input type="radio" name="def" id="def_cftc_%OI" value="PCT_OF_OI"><label for="def_cftc_%OI">CFTC_Net_pos_as_%_of_OI</label></div>
+                <div><input type="radio" name="def" id="def_cftc_%OI_vs_P" value="%OI_VS_PRICE"><label for="def_cftc_%OI_vs_P">CFTC_Net_pos/OI_vs_Price</label></div>
+                <div><input type="radio" name="def" id="def_comex_monthly" value="commex_monthly"><label for="commex_monthly">BZ_monthly_exp</label></div>
+                <div><input type="radio" name="def" id="def_comex_accu" value="commex_accu"><label for="commex_accu">BZ_cummulative_exp</label></div>
+                </div>
+            </div>
+            <div class="slicer">
+                <label for="region">REGION:</label>
+                <div class="region">
+                <div><input type="radio" name="region" id="region_us" value="United States" ><label for="region_us">United States</label></div>
+                <div><input type="radio" name="region" id="region_world" value="World" checked><label for="region_world">World</label></div>
+                <div><input type="radio" name="region" id="region_exporters" value="Major Exporters"><label for="region_exporters">Major Exporters</label></div>
+                <div><input type="radio" name="region" id="region_importers" value="Major Importers"><label for="region_importers">Major Importers</label></div>
+                <div><input type="radio" name="region" id="region_xchina" value="World Less China"><label for="region_xchina">World Less China</label></div>
+                <div><input type="radio" name="region" id="region_bz" value="Brazil"><label for="region_bz">Brazil</label></div>
+                <div><input type="radio" name="region" id="region_ar" value="Argentina"><label for="region_ar">Argentina</label></div>
+                <div><input type="radio" name="region" id="region_cn" value="China"><label for="region_cn">China</label></div>	
+                <div><input type="radio" name="region" id="region_mx" value="Mexico"><label for="region_mx">Mexico</label></div>
+                <div><input type="radio" name="region" id="region_eu" value="European Union"><label for="region_eu">EU</label></div>
+                <div><input type="radio" name="region" id="region_ukr" value="Ukraine"><label for="region_ukr">Ukraine</label></div>
+                <div><input type="radio" name="region" id="region_rus" value="Russia"><label for="region_rus">Russia</label></div>
+                <div><input type="radio" name="region" id="region_aus" value="Australia"><label for="region_aus">Australia</label></div>
+                <div><input type="radio" name="region" id="region_jp" value="Japan"><label for="region_jp">Japan</label></div>
+                <div><input type="radio" name="region" id="region_id" value="India"><label for="region_id">India</label></div>
+                <div><input type="radio" name="region" id="region_ph" value="Philippines"><label for="region_ph">Philippines</label></div>
+                <div><input type="radio" name="region" id="region_clb" value="Colombia"><label for="region_clb">Colombia</label></div>
+                <div><input type="radio" name="region" id="region_kr" value="South Korea"><label for="region_kr">Korea</label></div>
+
+                </div>
+            </div>
+            <div class="slicer">
+                <label for="MktYear">MARKET YEAR:</label>
+                <div><input type="radio" name="MktYear" id="MktYear00" value="0" checked><label for="MktYear00">current </label></div>
+                <div><input type="radio" name="MktYear" id="MktYear-1" value="-1"><label for="MktYear-1">-1</label></div>
+                <div><input type="radio" name="MktYear" id="MktYear-2" value="-2"><label for="MktYear-2">-2</label></div>
+            </div>
+            <div class="slicer">
+                <label for="Release">REPORT MONTH:</label>
+                <div><input type="radio" name="Release" id="Month00" value="0" checked><label for="Month00">current</label></div>
+                <div><input type="radio" name="Release" id="Month-1" value="-1"><label for="Month-1">-1</label></div>
+                <div><input type="radio" name="Release" id="Month-2" value="-2"><label for="Month-2">-2</label></div>
+            </div>
+
+        </div>
+        <button onclick="showImage()">Show Chart</button>
+	<div id="chartContainer"></div>
+    </body></html>
