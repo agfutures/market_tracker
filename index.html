@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Market tracker</title>
+    <title>BaseCharts</title>
     <style>
      #menu {
             display: flex;
@@ -40,7 +40,7 @@
         }
         .def {
             display: grid;
-            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-columns: repeat(2, 1fr) !important;
         }
         .def > div {
             width: 100%;
@@ -148,6 +148,8 @@
                 imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
                 } else if (def === 'CMY_Total_Commitments') {
                 imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                } else if (def === 'NMY_Outstanding_Sales') {
+                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
                 } else if (def === 'WEEKLY NET POSITION') {
                 imageId = ('CFTC' +'_' + commodity + comm_class +'_' + def).toUpperCase();
                 } else if (def === '%OI_VS_PRICE') {
@@ -155,9 +157,9 @@
                 } else if (def === 'PCT_OF_OI') {
                 imageId = ('CFTC' +'_' + def).toUpperCase();
                 } else if (def === 'comex_monthly') {
-                imageId = (def + '_' + commodity + '_' + 'region').toUpperCase();
+                imageId = (def + '_' + commodity + '_' + region).toUpperCase();
                 } else if (def === 'comex_accu') {
-                imageId = (def + '_' + commodity + '_' + 'region').toUpperCase();
+                imageId = (def + '_' + commodity + '_' + region).toUpperCase();
                 }  
             console.log('Constructed imageId:', imageId);
 
@@ -201,7 +203,6 @@
                 <div><input type="radio" name="commodity" id="commodity_wheat" value="Wheat"><label for="commodity_wheat">Wheat</label></div>
                 <div><input type="radio" name="commodity" id="commodity_soybean" value="Soybeans"><label for="commodity_soybean">Soybeans</label></div>
                 <div><input type="radio" name="commodity" id="commodity_sbm" value="Soybean Meal"><label for="commodity_sbm">Soybean Meal</label></div>
-                <div><input type="radio" name="commodity" id="commodity_soy oil" value="Soybean Oil"><label for="commodity_soy oil">Soybean Oil</label></div>
     
             </div>
             <div class="slicer">
@@ -216,21 +217,20 @@
             <div class="slicer">
                 <label for="def">DATASET:</label>
                 <div class="def">                
-                <div><input type="radio" name="def" id="def_snapshot" value="Snapshot" checked><label for="def_snapshot">SND_Snapshot</label></div>
+                <div><input type="radio" name="def" id="def_snapshot" value="Snapshot" checked><label for="def_snapshot">SND_Global_Snapshot</label></div>
                 <div><input type="radio" name="def" id="def_history" value="History"><label for="def_history">SND_Historical</label></div>
                 <div><input type="radio" name="def" id="def_ge" value="Good_Excellent"><label for="def_ge">US_GE_Condition</label></div>
                 <div><input type="radio" name="def" id="def_progress" value="Progress"><label for="def_progress">US_Progress</label></div>
-		<div><input type="radio" name="def" id="def_production" value="Production"><label for="def_production">US_Production</label></div>
-		<div><input type="radio" name="def" id="def_yield_acreage" value="Yield_Acreage"><label for="def_yield_acreage">US_Yield_Acres</label></div>
 		<div><input type="radio" name="def" id="def_weekly_exports" value="Weekly_Exports"><label for="def_weekly_exports">US_Monthly_Exports</label></div>
-		<div><input type="radio" name="def" id="def_cmy_net_sales" value="CMY_Net_Sales"><label for="def_cmy_net_sales">US_Net_Sales</label></div>
+		<div><input type="radio" name="def" id="def_cmy_net_sales" value="CMY_Net_Sales"><label for="def_cmy_net_sales">US_CMY_Net_Sales</label></div>
 		<div><input type="radio" name="def" id="def_accum_exports" value="Accum_Exports"><label for="def_accum_exports">US_Accum_Exports</label></div>
 		<div><input type="radio" name="def" id="def_cmy_commit" value="CMY_Total_Commitments"><label for="def_cmy_commit">US_CMY_Commitments</label></div>
+		<div><input type="radio" name="def" id="def_nmy_sales" value="NMY_Outstanding_Sales"><label for="nmy_sales">US_NMY_Outstanding_sales</label></div>
                 <div><input type="radio" name="def" id="def_cftc_pos" value="WEEKLY NET POSITION"><label for="def_cftc_pos">CFTC_Net_position</label></div>
                 <div><input type="radio" name="def" id="def_cftc_%OI" value="PCT_OF_OI"><label for="def_cftc_%OI">CFTC_Net_pos_as_%_of_OI</label></div>
                 <div><input type="radio" name="def" id="def_cftc_%OI_vs_P" value="%OI_VS_PRICE"><label for="def_cftc_%OI_vs_P">CFTC_Net_pos/OI_vs_Price</label></div>
-                <div><input type="radio" name="def" id="def_comex_monthly" value="commex_monthly"><label for="commex_monthly">BZ_monthly_exp</label></div>
-                <div><input type="radio" name="def" id="def_comex_accu" value="commex_accu"><label for="commex_accu">BZ_cummulative_exp</label></div>
+                <div><input type="radio" name="def" id="def_comex_monthly" value="comex_monthly"><label for="comex_monthly">BZ_monthly_exp</label></div>
+                <div><input type="radio" name="def" id="def_comex_accu" value="comex_accu"><label for="comex_accu">BZ_cummulative_exp</label></div>
                 </div>
             </div>
             <div class="slicer">
@@ -254,6 +254,9 @@
                 <div><input type="radio" name="region" id="region_ph" value="Philippines"><label for="region_ph">Philippines</label></div>
                 <div><input type="radio" name="region" id="region_clb" value="Colombia"><label for="region_clb">Colombia</label></div>
                 <div><input type="radio" name="region" id="region_kr" value="South Korea"><label for="region_kr">Korea</label></div>
+                <div><input type="radio" name="region" id="region_eg" value="Egypt"><label for="region_eg">Egypt</label></div>
+                <div><input type="radio" name="region" id="region_vn" value="Vietnam"><label for="region_vn">Vietnam</label></div>
+                <div><input type="radio" name="region" id="region_th" value="Thailand"><label for="region_th">Thailand</label></div>
 
                 </div>
             </div>
@@ -262,6 +265,7 @@
                 <div><input type="radio" name="MktYear" id="MktYear00" value="0" checked><label for="MktYear00">current </label></div>
                 <div><input type="radio" name="MktYear" id="MktYear-1" value="-1"><label for="MktYear-1">-1</label></div>
                 <div><input type="radio" name="MktYear" id="MktYear-2" value="-2"><label for="MktYear-2">-2</label></div>
+
             </div>
             <div class="slicer">
                 <label for="Release">REPORT MONTH:</label>
