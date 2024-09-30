@@ -10,7 +10,7 @@
             flex-wrap: wrap;
             margin-bottom: 0px;
             margin-right: 2px;
-            background-color: #D3D3D3;  //#89CFF0
+            background-color: #D3D3D3;  /* #89CFF0 */
         }
         body {
             margin: 0;
@@ -47,7 +47,7 @@
         }
         .region {
             display: grid;
-            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-columns: repeat(2, 1fr) !important;
         }
         .region > div {
             width: 100%;
@@ -85,11 +85,11 @@
 
     async function fetchAndCombineDictionaries() {
         const urls = [
-            'https://raw.githubusercontent.com/agfutures/pix_CFTC/refs/heads/main/pix_CFTC.txt',
-            'https://raw.githubusercontent.com/agfutures/pix_ERS/refs/heads/main/pix_ERS.txt',
-            'https://raw.githubusercontent.com/agfutures/pix_COMEX/refs/heads/main/pix_COMEX.txt',
-            'https://raw.githubusercontent.com/agfutures/pix_WASDE/refs/heads/main/pix_WASDE.txt',
-            'https://raw.githubusercontent.com/agfutures/pix_NASS/refs/heads/main/pix_NASS.txt'
+            'https://raw.githubusercontent.com/agfutures/pix/refs/heads/main/pix_CFTC.txt',
+            'https://raw.githubusercontent.com/agfutures/pix/refs/heads/main/pix_ERS.txt',
+            'https://raw.githubusercontent.com/agfutures/pix/refs/heads/main/pix_COMEX.txt',
+            'https://raw.githubusercontent.com/agfutures/pix/refs/heads/main/pix_WASDE.txt',
+            'https://raw.githubusercontent.com/agfutures/pix/refs/heads/main/pix_NASS.txt'
         ];
 
         const dictionaries = await Promise.all(urls.map(url => fetchDictionary(url)));
@@ -141,15 +141,35 @@
                 } else if (def === 'Yield_Acreage') {
                 imageId = ('NASS_' + def + '_' + commodity + comm_class).toUpperCase();
                 } else if (def === 'Weekly_Exports') {
-                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                    if (region === 'World') {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class).toUpperCase();
+                    } else {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class + '_' + region).toUpperCase();
+                    }
                 } else if (def === 'CMY_Net_Sales') {
-                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                if (region === 'World') {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class).toUpperCase();
+                    } else {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class + '_' + region).toUpperCase();
+                    }
                 } else if (def === 'Accum_Exports') {
-                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                if (region === 'World') {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class).toUpperCase();
+                    } else {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class + '_' + region).toUpperCase();
+                    }
                 } else if (def === 'CMY_Total_Commitments') {
-                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                if (region === 'World') {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class).toUpperCase();
+                    } else {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class + '_' + region).toUpperCase();
+                    }
                 } else if (def === 'NMY_Outstanding_Sales') {
-                imageId = ('ERS_' + def + '_' + commodity + comm_class +'_' + region).toUpperCase();
+                if (region === 'World') {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class).toUpperCase();
+                    } else {
+                        imageId = ('ERS_' + def + '_' + commodity + comm_class + '_' + region).toUpperCase();
+                    }
                 } else if (def === 'WEEKLY NET POSITION') {
                 imageId = ('CFTC' +'_' + commodity + comm_class +'_' + def).toUpperCase();
                 } else if (def === '%OI_VS_PRICE') {
@@ -157,26 +177,36 @@
                 } else if (def === 'PCT_OF_OI') {
                 imageId = ('CFTC' +'_' + def).toUpperCase();
                 } else if (def === 'comex_monthly') {
-                imageId = (def + '_' + commodity + '_' + region).toUpperCase();
+                if (region === 'World') {
+                        imageId = (def + '_' + commodity).toUpperCase();
+                    } else {
+                        imageId = (def + '_' + commodity + '_' + region).toUpperCase();
+                    }
                 } else if (def === 'comex_accu') {
-                imageId = (def + '_' + commodity + '_' + region).toUpperCase();
+                if (region === 'World') {
+                        imageId = (def + '_' + commodity).toUpperCase();
+                    } else {
+                        imageId = (def + '_' + commodity + '_' + region).toUpperCase();
+                    }
                 }  
             console.log('Constructed imageId:', imageId);
 
             // Clear existing images
             container.innerHTML = '';
 
-            // Display only the selected image ID
-            const selectedImage = d0[imageId];
-            if (selectedImage) {
-                const img = document.createElement('img');
-                img.src = `data:image/png;base64,${selectedImage}`;
-                img.alt = imageId;
-                container.appendChild(img);
+            // Display all images matching the constructed imageId
+            const matchingImages = Object.keys(d0).filter(key => key.includes(imageId));
+            if (matchingImages.length > 0) {
+                matchingImages.forEach(key => {
+                    const img = document.createElement('img');
+                    img.src = `data:image/png;base64,${d0[key]}`;
+                    img.alt = key;
+                    container.appendChild(img);
+                });
             } else {
-            const noDataMessage = document.createElement('p');
-            noDataMessage.textContent = 'No data found';
-            container.appendChild(noDataMessage);
+                const noDataMessage = document.createElement('p');
+                noDataMessage.textContent = 'No data found';
+                container.appendChild(noDataMessage);
             }
         }
 
@@ -203,7 +233,7 @@
                 <div><input type="radio" name="commodity" id="commodity_wheat" value="Wheat"><label for="commodity_wheat">Wheat</label></div>
                 <div><input type="radio" name="commodity" id="commodity_soybean" value="Soybeans"><label for="commodity_soybean">Soybeans</label></div>
                 <div><input type="radio" name="commodity" id="commodity_sbm" value="Soybean Meal"><label for="commodity_sbm">Soybean Meal</label></div>
-    
+                <div><input type="radio" name="commodity" id="commodity_sbo" value="Soybean Oil"><label for="commodity_sbo">Soybean Oil</label></div>
             </div>
             <div class="slicer">
                 <label for="comm_class">CLASS:</label>
@@ -249,15 +279,7 @@
                 <div><input type="radio" name="region" id="region_ukr" value="Ukraine"><label for="region_ukr">Ukraine</label></div>
                 <div><input type="radio" name="region" id="region_rus" value="Russia"><label for="region_rus">Russia</label></div>
                 <div><input type="radio" name="region" id="region_aus" value="Australia"><label for="region_aus">Australia</label></div>
-                <div><input type="radio" name="region" id="region_jp" value="Japan"><label for="region_jp">Japan</label></div>
                 <div><input type="radio" name="region" id="region_id" value="India"><label for="region_id">India</label></div>
-                <div><input type="radio" name="region" id="region_ph" value="Philippines"><label for="region_ph">Philippines</label></div>
-                <div><input type="radio" name="region" id="region_clb" value="Colombia"><label for="region_clb">Colombia</label></div>
-                <div><input type="radio" name="region" id="region_kr" value="South Korea"><label for="region_kr">Korea</label></div>
-                <div><input type="radio" name="region" id="region_eg" value="Egypt"><label for="region_eg">Egypt</label></div>
-                <div><input type="radio" name="region" id="region_vn" value="Vietnam"><label for="region_vn">Vietnam</label></div>
-                <div><input type="radio" name="region" id="region_th" value="Thailand"><label for="region_th">Thailand</label></div>
-
                 </div>
             </div>
             <div class="slicer">
@@ -278,3 +300,4 @@
         <button onclick="showImage()">Show Chart</button>
 	<div id="chartContainer"></div>
     </body></html>
+
